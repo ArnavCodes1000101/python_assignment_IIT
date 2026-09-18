@@ -1,38 +1,66 @@
 # Image Transformation Project
 
-## Overview
+This project is made in **Python using Google Colab**.
 
-* **Q10:** Image Transformation Using Matrices
-* **Q11:** Interactive Image Transformation Toolbox
+It has two questions:
 
-# Q10 – Image Transformation Using Matrices
+* **Q10:** Apply different image transformations using matrices.
+* **Q11:** Make a simple Image Transformation Toolbox where the user can choose different transformations from a menu.
+
+I used Python libraries like NumPy, Matplotlib and PIL for this project.
+
+---
+
+# Q10 - Image Transformations Using Matrices
+
+## What is the aim?
+
+The aim of this question is to take an image and apply different transformations to it using **2 × 2 matrices**.
 
 The transformations used are:
 
 1. Scaling
 2. Rotation
-3. Horizontal Shearing
-4. Reflection in Y-axis
-5. Projection onto X-axis
+3. Shearing
+4. Reflection
+5. Projection
+
+The program also checks the **rank of each matrix** to see if any information is lost.
+
+---
 
 ## Libraries Used
+
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from google.colab import files
 ```
-numpy and matplotlib are self explanatory 
+
+### NumPy
+
+I used NumPy for:
+
+* Creating matrices
+* Matrix multiplication
+* Finding matrix rank
+
+### Matplotlib
+
+I used Matplotlib to display the images.
 
 ### PIL
 
-PIL (Python Imaging Library) is used to open and process the uploaded image.
+PIL is used to open and work with the uploaded image.
 
-### Google Colab Files
+### Google Colab files
 
-This is used to upload an image directly from the computer.
+This is used so that I can upload an image from my computer.
 
-# Image Upload
+---
+
+# Uploading the Image
 
 The program first asks the user to upload an image.
 
@@ -41,169 +69,168 @@ uploaded = files.upload()
 filename = list(uploaded.keys())[0]
 ```
 
-The uploaded file name is obtained and then the image is opened.
+The uploaded image is then opened using PIL.
 
 ```python
 img = np.array(Image.open(filename).convert("RGB"))
 ```
 
-The image is converted into RGB format and then converted into a NumPy array.
-
-The height and width of the image are also found.
+The image is converted into a NumPy array because it makes it easier to work with the pixels.
 
 ---
 
 # Transformation Matrices
 
-## A1 – Scaling
+I used the following matrices.
+
+## A1 - Scaling
 
 ```text
 [ 2    0 ]
-[ 0   0.5 ]
+[ 0   0.5]
 ```
 
-This matrix changes the size of the image.
+This makes the image:
 
-* X-direction is multiplied by 2.
-* Y-direction is multiplied by 0.5.
+* Wider in the x direction
+* Smaller in the y direction
 
-Therefore, the image becomes wider and shorter.
+The rank is 2, so no information is lost.
 
 ---
 
-## A2 – Rotation
+## A2 - Rotation
 
 ```text
 [ 0  -1 ]
 [ 1   0 ]
 ```
 
-This matrix rotates the image by **90 degrees**.
+This rotates the image by **90 degrees**.
 
-The information in the image is preserved.
+The rank is 2, so the transformation does not remove a dimension.
 
 ---
 
-## A3 – Horizontal Shear
+## A3 - Horizontal Shear
 
 ```text
-[ 1   1 ]
-[ 0   1 ]
+[ 1  1 ]
+[ 0  1 ]
 ```
 
-This matrix performs a horizontal shear.
+This moves the pixels horizontally depending on their y position.
 
-The x-coordinate changes according to the y-coordinate, making the image look slanted.
+It makes the image look slanted.
+
+The rank is 2.
 
 ---
 
-## A4 – Reflection in Y-axis
+## A4 - Reflection
 
 ```text
 [ -1   0 ]
 [  0   1 ]
 ```
 
-This matrix reflects the image about the Y-axis.
+This reflects the image in the **Y-axis**.
 
-The x-coordinate changes sign while the y-coordinate remains the same.
+ the image gets flipped horizontally.
+ 
+The rank is 2.
 
 ---
 
-## A5 – Projection onto X-axis
+## A5 - Projection
 
 ```text
-[ 1   0 ]
-[ 0   0 ]
+[ 1  0 ]
+[ 0  0 ]
 ```
 
-This matrix projects the image onto the X-axis.
+This keeps the x direction but removes the y direction.
 
-The y-direction is removed, so information in the vertical direction is lost.
+Because one direction is removed, some information from the image is lost.
 
-The rank of this matrix is 1.
+The rank is 1.
 
 ---
 
-# Transformation Process
+# How the Transformation Works
 
-The program first finds the centre of the image.
+First, the center of the image is found.
 
 ```python
 cx = (width - 1) / 2
 cy = (height - 1) / 2
 ```
 
-The pixel coordinates are then created using:
+This is done so that the transformation happens around the center of the image.
+
+Then a grid of x and y coordinates is created.
 
 ```python
 X, Y = np.meshgrid(np.arange(width), np.arange(height))
 ```
 
-The coordinates are shifted so that the centre of the image becomes the origin.
+The coordinates are moved so that the center becomes the origin.
 
 ```python
 Xc = X - cx
 Yc = Y - cy
 ```
 
-The transformation matrix is then applied to the coordinates.
+Then the transformation matrix is applied.
+
+For example:
 
 ```python
-new_X = A[0, 0] * Xc + A[0, 1] * Yc
-new_Y = A[1, 0] * Xc + A[1, 1] * Yc
+new_X = A[0,0] * Xc + A[0,1] * Yc
+new_Y = A[1,0] * Xc + A[1,1] * Yc
 ```
 
-This gives the new position of every pixel.
+This gives the new position of each pixel.
 
-The transformed pixels are then placed into a new image.
+Finally, the pixels are put into their new positions and the transformed image is displayed.
 
 ---
 
 # Matrix Rank
 
-The program also calculates the rank of every matrix.
+The program uses:
 
 ```python
 np.linalg.matrix_rank(A)
 ```
 
-Rank tells us how many independent directions remain after the transformation.
+to find the rank of the matrix.
 
-* Rank 2 → Both dimensions are preserved.
-* Rank 1 → One dimension is lost.
+In simple words:
 
-Therefore:
+* **Rank 2:** Both directions are still present.
+* **Rank 1:** One direction has been lost.
+* **Rank 0:** Everything is mapped to zero.
 
-```text
-A1 → Rank 2
-A2 → Rank 2
-A3 → Rank 2
-A4 → Rank 2
-A5 → Rank 1
-```
+For this question:
 
----
-
-# Q10 Summary
-
-| Matrix | Transformation         | Information Lost |
-| ------ | ---------------------- | ---------------- |
-| A1     | Scaling                | No               |
-| A2     | 90° Rotation           | No               |
-| A3     | Horizontal Shear       | No               |
-| A4     | Reflection in Y-axis   | No               |
-| A5     | Projection onto X-axis | Yes              |
+| Matrix | Transformation | Rank | Information Lost |
+| ------ | -------------- | ---: | ---------------- |
+| A1     | Scaling        |    2 | No               |
+| A2     | Rotation       |    2 | No               |
+| A3     | Shear          |    2 | No               |
+| A4     | Reflection     |    2 | No               |
+| A5     | Projection     |    1 | Yes              |
 
 ---
 
-# Q11 – Interactive Image Transformation Toolbox
+# Q11 - Image Transformation Toolbox
 
-## Aim
+##  aim
 
-To create an interactive image transformation toolbox where the user can upload an image and choose different transformations from a menu.
+The aim of Q11 is to make a small interactive program where the user can upload an image and select what transformation they want to apply.
 
-The toolbox provides:
+The menu has these options:
 
 ```text
 1. Rotate
@@ -219,49 +246,47 @@ The toolbox provides:
 
 # Uploading the Image
 
-The user first uploads a JPG or PNG image.
+Just like Q10, the user first uploads an image.
 
-```python
-uploaded = files.upload()
-```
-
-The image is then opened using PIL.
+The image is stored as the original image so that it can be restored later.
 
 ```python
 original = Image.open(filename).convert("RGB")
-```
-
-A copy of the original image is stored.
-
-```python
 image = original.copy()
 ```
 
-This is useful because the image can be restored using the Reset option.
+`original` keeps the first uploaded image.
+
+`image` is the image that we keep changing.
 
 ---
 
 # Displaying the Image
 
-A function called `show_image()` is used to display the image.
+I made a small function called `show_image()`.
 
 ```python
 def show_image(img, title):
+    plt.figure(figsize=(7, 5))
+    plt.imshow(img)
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
 ```
 
-The function:
+This function is just used to display the image.
 
-* Creates a figure
-* Displays the image
-* Adds a title
-* Removes the axes
-* Shows the result
+Instead of writing the same display code again and again, I can just call:
+
+```python
+show_image(image, "Rotated Image")
+```
 
 ---
 
-# Interactive Menu
+# Menu
 
-The toolbox uses:
+The program uses:
 
 ```python
 while True:
@@ -269,13 +294,7 @@ while True:
 
 This keeps the menu running until the user selects Exit.
 
-The user enters a number:
-
-```python
-choice = input("Enter your choice: ")
-```
-
-The program then checks the selected option using `if` and `elif`.
+The user enters a number and the program performs the selected operation.
 
 ---
 
@@ -283,24 +302,19 @@ The program then checks the selected option using `if` and `elif`.
 
 The user enters an angle.
 
-```python
-angle = float(input("Enter rotation angle: "))
-```
-
-The image is then rotated.
-
-```python
-image = image.rotate(angle, expand=True)
-```
-
-For example:
+Example:
 
 ```text
-45 → rotates the image by 45°
-90 → rotates the image by 90°
+Enter rotation angle: 45
 ```
 
-`expand=True` allows the output image to increase in size when required.
+The image is rotated using:
+
+```python
+image.rotate(angle, expand=True)
+```
+
+`expand=True` makes sure the rotated image is not unnecessarily cut off.
 
 ---
 
@@ -308,190 +322,118 @@ For example:
 
 The user enters a resize factor.
 
-```python
-factor = float(input("Enter resize factor: "))
-```
-
 For example:
 
 ```text
-2   → twice the original size
-0.5 → half the original size
+Enter resize factor: 2
 ```
 
-The new width and height are calculated and the image is resized.
+This makes the image approximately twice as large.
+
+If the factor is:
+
+```text
+0.5
+```
+
+the image becomes half its original size.
 
 ---
 
 # 3. Flip
 
-The user can choose:
+The program gives two choices:
 
 ```text
 1. Horizontal
 2. Vertical
 ```
 
-For a horizontal flip:
+Horizontal flip means the image is flipped left to right.
 
-```python
-image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-```
-
-For a vertical flip:
-
-```python
-image.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-```
+Vertical flip means the image is flipped upside down.
 
 ---
 
 # 4. Shear
 
-The user can choose:
+The program asks whether the user wants:
 
 ```text
 1. Horizontal shear
 2. Vertical shear
 ```
 
-The user also enters a shear value.
+Then it asks for a shear value.
 
-For horizontal shear, the program uses:
-
-```text
-[ 1   shear ]
-[ 0     1   ]
-```
-
-For vertical shear:
-
-```text
-[ 1     0   ]
-[ shear  1  ]
-```
-
-The transformation is applied using PIL's affine transformation.
+Shearing makes the image look slanted.
 
 ---
 
 # 5. Custom Matrix
 
-This option allows the user to enter their own 2×2 matrix.
+This is probably the most important part related to Q10.
 
-The program asks for:
-
-```text
-a
-b
-c
-d
-```
-
-These values form:
-
-```text
-[ a  b ]
-[ c  d ]
-```
+The user can enter their own 2 × 2 matrix.
 
 For example:
 
 ```text
 a = 1
-b = 1
+b = 0
 c = 0
 d = 1
 ```
 
-gives:
+This gives:
 
 ```text
-[ 1  1 ]
+[ 1  0 ]
 [ 0  1 ]
 ```
 
-which produces a horizontal shear.
+which is the identity matrix, so the image basically stays the same.
 
-The same pixel-coordinate method used in Q10 is then used to apply the custom matrix.
+Another example is:
+
+```text
+[ -1   0 ]
+[  0   1 ]
+```
+
+which can be used for reflection.
+
+The program applies the matrix to the image coordinates and creates a new image.
 
 ---
 
 # 6. Reset
 
-The Reset option returns the image to its original state.
+If I have applied many transformations and want the original image back, I can select:
+
+```text
+6. Reset
+```
+
+The program uses:
 
 ```python
 image = original.copy()
 ```
 
-This is possible because the original image was saved separately when the program started.
+So the image goes back to the one that was uploaded at the beginning.
 
 ---
 
 # 7. Exit
 
-When the user selects Exit:
+When the user selects:
 
-```python
-break
+```text
+7. Exit
 ```
 
-is used to stop the `while` loop and close the toolbox.
+the loop stops and the program ends.
 
 ---
-
-# Technologies Used
-
-* **Python**
-* **NumPy**
-* **Matplotlib**
-* **PIL / Pillow**
-* **Google Colab**
-
----
-
-# How to Run
-
-## Q10
-
-1. Open the Q10 Python file in Google Colab.
-2. Run all the cells.
-3. Upload a JPG or PNG image.
-4. The program displays the original image.
-5. The five transformations are applied one by one.
-6. The transformed images are displayed.
-
-## Q11
-
-1. Open the Q11 Python file in Google Colab.
-2. Run the program.
-3. Upload a JPG or PNG image.
-4. Select an operation from the menu.
-5. Enter the required value.
-6. The transformed image is displayed.
-7. Continue using the menu or select Reset/Exit.
-
----
-
-# Difference Between Q10 and Q11
-
-| Q10                                | Q11                              |
-| ---------------------------------- | -------------------------------- |
-| Uses predefined matrices           | Uses an interactive menu         |
-| Focuses on matrix transformations  | Focuses on user interaction      |
-| Transformations are fixed          | User enters parameters           |
-| Includes projection                | Includes resize and flip         |
-| Shows matrix rank                  | Allows custom matrices           |
-| Demonstrates mathematical concepts | Works like a small image toolbox |
-
----
-
-# Conclusion
-
-In **Q10**, different transformation matrices were used to understand how matrices affect an image. The program also demonstrates the concept of matrix rank and information loss.
-
-In **Q11**, these ideas were extended into an interactive toolbox. The user can upload an image and choose different operations such as rotation, resizing, flipping, shearing and custom matrix transformation.
-
-Both programs demonstrate how **linear algebra and image processing can be combined using Python**.
 
